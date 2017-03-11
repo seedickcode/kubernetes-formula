@@ -1,0 +1,36 @@
+# -*- coding: utf-8 -*-
+# vim: ft=jinja
+
+{## Start with  defaults from defaults.yaml ##}
+{% import_yaml "kubernetes/defaults.yaml" as default_settings %}
+
+{##
+Setup variable using grains['os_family'] based logic, only add key:values here
+that differ from whats in defaults.yaml
+##}
+{% set os_family_map = salt['grains.filter_by']({
+    'Debian': {},
+    'RedHat': {},
+    'Arch': {},
+  }, grain='os_family', merge=salt['pillar.get']('kubernetes:lookup')) 
+%}
+
+{## Merge the flavor_map to the default settings ##}
+{% do default_settings.kubernetes.update(os_family_map) %}
+
+{## Merge in pillar overrides ##}
+{% set kubernetes = salt['pillar.get'](
+    'kubernetes:config',
+    default=default_settings.kubernetes,
+    merge=True)
+%}
+
+{## Merge in finally any grains overrides ##}
+{% set kubernetes_grains = salt['grains.get'](
+    'kubernetes',
+    default={})
+%}
+{% do kubernetes.update(kubernetes_grains) %}
+
+
+

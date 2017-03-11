@@ -1,0 +1,11 @@
+# -*- coding: utf-8 -*-
+# vim: ft=yaml
+kubernetes:
+  kubenetes_version: 1.5.4
+  container_repository_base: 'gcr.io/google_containers'
+  hyperkube_image: 'hyperkube'
+  etcd_version: 3.0.14
+  etcd_image: 'etcd'
+
+
+
