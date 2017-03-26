@@ -2,9 +2,9 @@
 
 kubernetes-repository:
   pkgrepo.managed:
-    - name: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    - name: {{ kubernetes.repository.name }}
     - humanname: Kubernetes Repsitory
-    - key_url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    - key_url: {{ kubernetes.repository.key_url }}
     - file: /etc/apt/sources.list.d/kubernetes.list
     - refresh_db: True
 

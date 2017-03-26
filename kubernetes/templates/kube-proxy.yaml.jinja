@@ -1,0 +1,33 @@
+{% from "kubernetes/map.jinja" import kubernetes with context -%}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-proxy
+  namespace: kube-system
+spec:
+  hostNetwork: true
+  containers:
+  - name: kube-proxy
+    image: {{kubernetes.lookup.image_repository}}/{{ kubernetes.lookup.image_kube_proxy}}:v{{kubernetes.lookup.version}}
+    imagePullPolicy: Always
+    command:
+    - kube-proxy
+    - --master={{ kubernetes.config.api_url }}
+    - --kubeconfig={{ kubernetes.lookup.kubelet_conf }}
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - mountPath: {{ kubernetes.lookup.base_dir }}
+      name: kubernetes-config
+      readOnly: true
+    - mountPath: {{ kubernetes.lookup.system_certs_dir }}
+      name: ssl-certs-host
+      readOnly: true
+  volumes:
+  - hostPath:
+      path: {{ kubernetes.lookup.base_dir }}
+    name: kubernetes-config
+  - hostPath:
+      path: {{ kubernetes.lookup.system_certs_dir }}
+    name: ssl-certs-host

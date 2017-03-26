@@ -1,0 +1,40 @@
+{% from "kubernetes/map.jinja" import kubernetes with context -%}
+{% if 'ca_cert_pillar' in kubernetes.config -%}
+{% set ca_cert_material = salt['pillar.get'](kubernetes.config.ca_cert_pillar) -%}
+{% else -%}
+{% set ca_cert_material = kubernetes.config.ca_cert -%}
+{% endif -%}
+{% if 'kubelet_cert_pillar' in kubernetes.config -%}
+{% set kubelet_cert_material = salt['pillar.get'](kubernetes.config.kubelet_cert_pillar) -%}
+{% else -%}
+{% set kubelet_cert_material = kubernetes.config.kubelet_cert -%}
+{% endif -%}
+{% if 'kubelet_key_pillar' in kubernetes.config -%}
+{% set kubelet_key_material = salt['pillar.get'](kubernetes.config.kubelet_key_pillar) -%}
+{% else -%}
+{% set kubelet_key_material = kubernetes.config.kubelet_key -%}
+{% endif -%}
+---
+apiVersion: v1
+kind: Config
+clusters:
+- cluster:
+    certificate-authority-data: {{ salt['hashutil.base64_b64encode'](ca_cert_material) }}
+    server: {{ kubernetes.config.api_url }}
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: admin
+  name: admin@kubernetes
+- context:
+    cluster: kubernetes
+    user: kubelet
+  name: kubelet@kubernetes
+current-context: admin@kubernetes
+preferences: {}
+users:
+- name: kubelet
+  user:
+    client-certificate-data: {{ salt['hashutil.base64_b64encode'](kubelet_cert_material) }}
+    client-key-data: {{ salt['hashutil.base64_b64encode'](kubelet_key_material) }}

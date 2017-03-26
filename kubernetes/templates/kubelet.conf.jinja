@@ -1,0 +1,22 @@
+{% from "kubernetes/map.jinja" import kubernetes with context -%}
+{# Note - See the 'inline' version of this template for work on inlining the certs #}
+---
+apiVersion: v1
+kind: Config
+clusters:
+- cluster:
+    certificate-authority: /etc/kubernetes/pki/ca.pem
+    server: {{ kubernetes.config.api_url }}
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: kubelet
+  name: kubelet@kubernetes
+current-context: kubelet@kubernetes
+preferences: {}
+users:
+- name: kubelet
+  user:
+    client-certificate: /etc/kubernetes/pki/node-{{ salt['grains.get']('host','hostgrainfail') }}.pem
+    client-key: /etc/kubernetes/pki/node-{{ salt['grains.get']('host','hostgrainfail') }}-key.pem

@@ -3,6 +3,8 @@
 include:
   - kubernetes.repository
   - kubernetes.docker
+  - kubernetes.certs
+  - kubernetes.kubelet
 
 kubectl_package:
   pkg.latest:

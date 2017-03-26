@@ -1,11 +1,26 @@
 # -*- coding: utf-8 -*-
 # vim: ft=yaml
 kubernetes:
-  kubenetes_version: 1.5.4
-  container_repository_base: 'gcr.io/google_containers'
-  hyperkube_image: 'hyperkube'
-  etcd_version: 3.0.14
-  etcd_image: 'etcd'
+  lookup: 
+    version: 1.5.4
+    image_repository: 'gcr.io/google_containers'
+    image_kube_proxy: 'kube-proxy-amd64'
+    image_etcd: 'etcd-amd64:3.0.14-kubeadm'
+    image_hyperkube: 'hyperkube'
+    bridge: 'cbr0'
+    etcd_image: "etcd-amd64:3.0.14-kubeadm"
+    etcd_manifest_file: "/etc/kubernetes/manifests/etcd.yaml"
+    pki_directory: '/etc/kubernetes/pki'
+    kubelet_conf: '/etc/kubernetes/kubelet.conf'
+    base_dir: '/etc/kubernetes'
+    certs_dir: '/etc/kubernetes/pki'
+    manifests_dir: '/etc/kubernetes/manifests'
+    addons_dir: '/etc/kubernetes/addons'
+    cni_net_dir: '/etc/cni/net.d'
+    system_certs_dir: "/etc/ssl/certs"
 
-
+  config: {}
+  repository:
+    release': '40'
+    keyid': '1B0C6205FD380FBB'
 

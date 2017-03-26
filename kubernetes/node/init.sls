@@ -3,6 +3,10 @@
 include:
   - kubernetes.repository
   - kubernetes.docker
+  - kubernetes.certs
+  - kubernetes.kubelet
+  - kubernetes.kubeproxy
+  - kubernetes.node.weave
 
 kubectl_package:
   pkg.latest:

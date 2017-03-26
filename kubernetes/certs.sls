@@ -3,30 +3,34 @@
 
 {% from "kubernetes/map.jinja" import kubernetes with context %}
 
-{% set certgen="make-cert.sh" %}
-{% if kubernetes.master_cert_ip is defined %}
-  {% set certgen="make-ca-cert.sh" %}
-{% endif %}
+{{ kubernetes.lookup.pki_directory }}:
+  file.directory: []
 
-openssl:
-  pkg.installed: []
-
-kube-cert:
-  group.present:
-    - system: True
-
-kubernetes-cert:
-  cmd.script:
-    - unless: test -f /srv/kubernetes/server.cert
-    - source: salt://kubernetes/files/{{certgen}}
-{% if kubernetes.master_cert_ip is defined %}
-    # Not supported by this easy-rsa bundle - todo - args: {{kubernetes.master_cert_ip}} {{kubernetes.master_extra_sans|default('')}}
-    - args: {{kubernetes.master_cert_ip}}
+kubernetes_ca_cert:
+  file.managed:
+    - name: {{ kubernetes.lookup.pki_directory }}/ca.pem
+    - contents_pillar: {{ kubernetes.config.ca_cert_pillar }}
     - require:
-      - pkg: curl
-{% endif %}
-    - cwd: /
-    - runas: root
-    - shell: /bin/bash
+      - file: {{ kubernetes.lookup.pki_directory }}
+
+kubernetes_ca_key:
+  file.managed:
+    - name: {{ kubernetes.lookup.pki_directory }}/ca-key.pem
+    - contents_pillar: {{ kubernetes.config.ca_key_pillar }}
     - require:
-      - pkg: openssl
+      - file: {{ kubernetes.lookup.pki_directory }}
+    
+#kubernetes_apiserver_cert:
+#  file.managed:
+#    - name: {{ kubernetes.lookup.pki_directory }}/apiserver.pem
+#    - contents_pillar: {{ kubernetes.config.apiserver_cert_pillar }}
+#    - require:
+#      - file: {{ kubernetes.lookup.pki_directory }}
+#
+#kubernetes_apiserver_key:
+#  file.managed:
+#    - name: {{ kubernetes.lookup.pki_directory }}/apiserver-key.pem
+#    - contents_pillar: {{ kubernetes.config.apiserver_key_pillar }}
+#    - require:
+#      - file: {{ kubernetes.lookup.pki_directory }}
+#    
