@@ -7,6 +7,7 @@ include:
   - kubernetes.kubelet
   - kubernetes.kubeproxy
   - kubernetes.node.weave
+  - kubernetes.node.glusterfs
 
 kubectl_package:
   pkg.latest:
